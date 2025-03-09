@@ -10,7 +10,6 @@ const userSchema = new mongoose.Schema({
   },
   phoneNumber: {
     type: String,
-    default: null,
   },
   weight: {
     type: Number,

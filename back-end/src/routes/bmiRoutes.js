@@ -18,15 +18,6 @@ router.post('/users', async (req, res) => {
       phoneNumber
     } = req.body;
 
-    if (phoneNumber) { 
-      const exist = await User.find({ 
-        phoneNumber
-      })
-      if (exist) { 
-        return res.status(403).json({ message: "Error creating user", error: 'user already exist!' });
-      }
-    }
-
     const newUser = new User({
       firstName,
       weight,

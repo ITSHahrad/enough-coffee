@@ -197,11 +197,11 @@ function BMICalculator() {
       breastfeeding,
       bmi,
       caffeine,
-      phoneNumber,
+      phoneNumber: Cookies.get('phoneNumber') || phoneNumber,
     };
 
     try {
-      const response = await axios.post('https://enough-coffee.liara.run/api/bmi/users', userData);
+      const response = await axios.post(import.meta.env.VITE_BACKEND_API + 'api/bmi/users', userData);
       console.log('User saved:', response.data);
       Cookies.set('hasUsedForm', 'true', { expires: 365 });
       setHasUsedForm(true);
@@ -235,6 +235,7 @@ function BMICalculator() {
 
   const handlePhoneSubmit = () => {
     setResults(null);
+    window.open('/', '_self');
   };
 
   return (
