@@ -293,7 +293,7 @@ function BMICalculator() {
               ریست
             </button>
           </div>
-          <span className='w-full flex justify-center gap-x-1'>نوشته شده توسط <a href="khomarian.ir" target='_blank'>فروشگاه خماریان</a></span>
+          <span className='w-full flex justify-center gap-x-1'>نوشته شده توسط <a href="https://khomarian.ir" target='_blank' className='text-coffee font-bold'>فروشگاه خماریان</a></span>
         </form>
       ) : (
         <div className="mt-6 p-6 border border-[#8D5524] rounded-lg bg-[#8D5524]/10 space-y-4">
