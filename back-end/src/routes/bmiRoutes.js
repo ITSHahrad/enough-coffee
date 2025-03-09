@@ -36,7 +36,6 @@ router.post('/users', async (req, res) => {
   }
 });
 
-// READ - Get all users
 router.get('/users', async (req, res) => {
   try {
     const users = await User.find();
@@ -46,7 +45,6 @@ router.get('/users', async (req, res) => {
   }
 });
 
-// READ - Get a single user by ID
 router.get('/users/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -57,7 +55,6 @@ router.get('/users/:id', async (req, res) => {
   }
 });
 
-// UPDATE - Update a user's data
 router.put('/users/:id', async (req, res) => {
   try {
     const updatedUser = await User.findByIdAndUpdate(
@@ -72,7 +69,6 @@ router.put('/users/:id', async (req, res) => {
   }
 });
 
-// DELETE - Delete a user
 router.delete('/users/:id', async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);

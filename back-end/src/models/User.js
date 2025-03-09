@@ -67,9 +67,8 @@ const userSchema = new mongoose.Schema({
   versionKey: false
 });
 
-// Indexes (optional, for performance)
-userSchema.index({ firstName: 1 }); // Index on firstName for faster searches
-userSchema.index({ createdAt: -1 }); // Index on createdAt for sorting by date
+userSchema.index({ firstName: 1 });
+userSchema.index({ createdAt: -1 });
 
 const User = mongoose.model('User', userSchema);
 
