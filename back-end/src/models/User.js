@@ -8,6 +8,10 @@ const userSchema = new mongoose.Schema({
     minlength: [1, 'نام نمی‌تواند خالی باشد'],
     maxlength: [50, 'نام نمی‌تواند بیش از 50 کاراکتر باشد'],
   },
+  phoneNumber: {
+    type: String,
+    default: null,
+  },
   weight: {
     type: Number,
     required: [true, 'وزن الزامی است'],

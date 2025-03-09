@@ -15,7 +15,17 @@ router.post('/users', async (req, res) => {
       breastfeeding,
       bmi,
       caffeine,
+      phoneNumber
     } = req.body;
+
+    if (phoneNumber) { 
+      const exist = await User.find({ 
+        phoneNumber
+      })
+      if (exist) { 
+        return res.status(403).json({ message: "Error creating user", error: 'user already exist!' });
+      }
+    }
 
     const newUser = new User({
       firstName,
@@ -27,6 +37,7 @@ router.post('/users', async (req, res) => {
       breastfeeding,
       bmi,
       caffeine,
+      phoneNumber
     });
 
     const savedUser = await newUser.save();

@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 function calculateBMI(weight, height) {
   const bmi = weight / Math.pow(height / 100, 2);
@@ -63,6 +65,45 @@ function getPregnancyBreastfeedingMessage(gender, pregnant, breastfeeding) {
   return '';
 }
 
+function PhoneNumberPage({ setPhoneNumber, onSubmit }) {
+  const [phone, setPhone] = useState('');
+  const phoneRegex = /^[0-9]{11}$/;
+
+  const handlePhoneSubmit = (e) => {
+    e.preventDefault();
+    if (phoneRegex.test(phone)) {
+      setPhoneNumber(phone);
+      Cookies.set('phoneNumber', phone, { expires: 365 });
+      return onSubmit();
+    } else {
+      alert('لطفاً شماره تلفن را با فرمت درست وارد کنید، مثال: 09123456789');
+    }
+  };
+
+  return (
+    <div className="container mx-auto p-6 max-w-md bg-[#FFF5E1] rounded-xl shadow-2xl">
+      <h1 className="text-2xl font-bold text-[#3E2723] mb-6 text-center">شماره تلفن خود را وارد کنید</h1>
+      <form onSubmit={handlePhoneSubmit} className="space-y-4">
+        <input
+          type="text"
+          dir='ltr'
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="09123456789"
+          className="border border-[#8D5524] p-3 w-full rounded-lg text-[#3E2723] placeholder-[#8D5524] focus:outline-none focus:ring-2 focus:ring-[#F57C00]"
+          maxLength={11}
+        />
+        <button
+          type="submit"
+          className="bg-[#F57C00] text-white py-2 px-6 rounded-lg hover:bg-[#d96b00] transition duration-300 w-full"
+        >
+          تأیید
+        </button>
+      </form>
+    </div>
+  );
+}
+
 function BMICalculator() {
   const [formData, setFormData] = useState({
     firstName: '',
@@ -74,6 +115,8 @@ function BMICalculator() {
     breastfeeding: 'no',
   });
   const [results, setResults] = useState(null);
+  const [hasUsedForm, setHasUsedForm] = useState(Cookies.get('hasUsedForm') === 'true');
+  const [phoneNumber, setPhoneNumber] = useState(Cookies.get('phoneNumber') || '');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -124,7 +167,7 @@ function BMICalculator() {
     let pregnancyMessage = '';
     if (gender === 'female') {
       if (pregnant === 'yes') {
-        pregnancyMessage = "طبق تحقیقات به عمل آمده تا قبل از شش ماهگی فرایند جذب و دفع کافئین هنگام نوشیدن قهوه ی مادر ممکن است صد و شصت ساعت(بیش از شش روز) به طول انجامد. اما سازمان های بهداشتی مانند آکادمی اطفال آمریکا و سازمان جهانی بهداشت مصرف 200 میلی گرم کافئین در روز برای زنان شیرده توصیه می کند(معادل یک لیوان 240 میلی لیتر قهوه فرانسه یا دمی) توجه داشته باشید که مصرف زیاد قهوه در دوران شیردهی باعث کاهش آهن در شیر مادر شده ممکن است باعث بی قراری یا اختلالات خواب در نوزاد شود. اگر نگران تاثیر کافئین بر نوزاد هستید می توانید از قهوه ی بدون کافئین (با مشورت پزشک) استفاده کنید. زمان مصرف: بهتر است قهوه بلافاصله پس از شیردهی مصرف شود تا زمان کافی برای کاهش کافئین در شیر مادر قبل از شیردهی بعدی وجود داشته باشد. معمولا سطح کافئین در شیر مادر حدود یک تا دو ساعت پس از مصرف به اوج خود می رسد";
+        pregnancyMessage = "طبق تحقیقات به عمل آمده تا قبل از شش ماهگی فرایند جذب و دفع کافئین هنگام نوشیدن قهوه ی مادر ممکن است صد و شصت ساعت(بیش از شش روز) به طول انجامد. اما سازمان های بهداشتی مانند آکادمی اطفال آمریکا و سازمان جهانی بهداشت مصرف 200 میلی گرم کافئین در روز برای زنان شیرده توصیه می کند(معادل یک لیوان 240 میلی لیتر قهوه فرانسه یا دمی) توجه داشته باشید که مصرف زیاد قهوه در دوران شیردهی باعث کاهش آهن در شیر مادر شده ممکن است باعث بی قراری یا اختلالات خواب در نوزاد شود. اگر نگران تاثیر کافئین بر نوزاد هستید می можете از قهوه ی بدون کافئین (با مشورت پزشک) استفاده کنید. زمان مصرف: بهتر است قهوه بلافاصله پس از شیردهی مصرف شود تا زمان کافی برای کاهش کافئین در شیر مادر قبل از شیردهی بعدی وجود داشته باشد. معمولا سطح کافئین در شیر مادر حدود یک تا دو ساعت پس از مصرف به اوج خود می رسد";
       } else if (pregnant === 'no' && breastfeeding === 'no') {
         pregnancyMessage = "بر اساس تحقیقات و توصیه های پزشکی مصرف محدود کافئین در دوران بارداری معمولا بی خطر است اما مصرف زیاد آن خطراتی به همراه دارد. سازمان جهانی بهداشت و کالج آمریکایی متخصصین زنان و زایمان مصرف کافئین را به حداکثر 200 میلی گرم در روز محدود می کنند. خطرات: 1.مصرف زیاد کافئین ممکن است خطر سقط جنین را افزایش دهد. 2. کافئین می تواند از جفت عبور کند و به جنین برسد. متابولیسم کافئین در جنین کند تر است و ممکن است بر رشد او تاثیر بگذارد. 3. قهوه می تواند جذب آهن را کاهش دهد و برای شما که در دوران بارداری به سر می برید مهم است.(کم خونی فقر آهن در بارداری شایع است). 4. کاهش وزن نوزاد، نقص هنگام تولد و زایمان زودرس نیز عوارضی هستند که با مصرف زیاد قهوه با آن رو به رو خواهید بود. توصیه: شما میتوانید مصرف قهوه را محدود کنید و اگر به قهوه عادت دارید ار قهوه های بدون کافئین یا قهوه های رقیق(فرانسه)استفاده کنید";
       } else if (breastfeeding === 'yes') {
@@ -154,11 +197,14 @@ function BMICalculator() {
       breastfeeding,
       bmi,
       caffeine,
+      phoneNumber,
     };
 
     try {
       const response = await axios.post('https://enough-coffee.liara.run/api/bmi/users', userData);
       console.log('User saved:', response.data);
+      Cookies.set('hasUsedForm', 'true', { expires: 365 });
+      setHasUsedForm(true);
     } catch (error) {
       console.error('Error saving user:', error);
     }
@@ -187,138 +233,159 @@ function BMICalculator() {
     setResults(null);
   };
 
+  const handlePhoneSubmit = () => {
+    setResults(null);
+  };
+
   return (
-    <div className="container mx-auto p-6 max-w-md bg-[#FFF5E1] rounded-xl shadow-2xl">
-      <h1 className="text-2xl font-bold text-[#3E2723] mb-6 text-center">Enough Coffee</h1>
-      {!results ? (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleChange}
-            placeholder="نام"
-            className="border border-[#8D5524] p-3 w-full rounded-lg text-[#3E2723] placeholder-[#8D5524] focus:outline-none focus:ring-2 focus:ring-[#F57C00]"
-          />
-          <input
-            type="number"
-            name="weight"
-            value={formData.weight}
-            onChange={handleChange}
-            placeholder="وزن (کیلوگرم)"
-            className="border border-[#8D5524] p-3 w-full rounded-lg text-[#3E2723] placeholder-[#8D5524] focus:outline-none focus:ring-2 focus:ring-[#F57C00]"
-            min="0"
-            max="250"
-          />
-          <input
-            type="number"
-            name="height"
-            value={formData.height}
-            onChange={handleChange}
-            placeholder="قد (سانتی‌متر)"
-            className="border border-[#8D5524] p-3 w-full rounded-lg text-[#3E2723] placeholder-[#8D5524] focus:outline-none focus:ring-2 focus:ring-[#F57C00]"
-            min="0"
-          />
-          <input
-            type="number"
-            name="age"
-            value={formData.age}
-            onChange={handleChange}
-            placeholder="سن"
-            className="border border-[#8D5524] p-3 w-full rounded-lg text-[#3E2723] placeholder-[#8D5524] focus:outline-none focus:ring-2 focus:ring-[#F57C00]"
-            min="0"
-            max="150"
-          />
-          <div className="flex space-x-6 justify-center">
-            <label className="inline-flex items-center text-[#3E2723] gap-x-2">
-              <input
-                type="radio"
-                name="gender"
-                value="male"
-                checked={formData.gender === 'male'}
-                onChange={() => handleRadioChange('gender', 'male')}
-                className="form-radio text-[#F57C00] focus:ring-[#F57C00]"
-              />
-              <span className="ml-2">مرد</span>
-            </label>
-            <label className="inline-flex items-center text-[#3E2723] gap-x-2">
-              <input
-                type="radio"
-                name="gender"
-                value="female"
-                checked={formData.gender === 'female'}
-                onChange={() => handleRadioChange('gender', 'female')}
-                className="form-radio text-[#F57C00] focus:ring-[#F57C00]"
-              />
-              <span className="ml-2">زن</span>
-            </label>
-          </div>
-          {formData.gender === 'female' && (
-            <div className="space-y-3">
-              <div>
-                <label className="block font-medium text-[#3E2723] mb-1">آیا باردار هستید؟</label>
-                <select
-                  name="pregnant"
-                  value={formData.pregnant}
-                  onChange={handleChange}
-                  className="border border-[#8D5524] p-3 w-full rounded-lg text-[#3E2723] focus:outline-none focus:ring-2 focus:ring-[#F57C00]"
-                >
-                  <option value="no">خیر</option>
-                  <option value="yes">بله</option>
-                </select>
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            !hasUsedForm || phoneNumber ? (
+              <div className="container mx-auto p-6 max-w-md bg-[#FFF5E1] rounded-xl shadow-2xl">
+                <h1 className="text-2xl font-bold text-[#3E2723] mb-6 text-center">Enough Coffee</h1>
+                {!results ? (
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      placeholder="نام"
+                      className="border border-[#8D5524] p-3 w-full rounded-lg text-[#3E2723] placeholder-[#8D5524] focus:outline-none focus:ring-2 focus:ring-[#F57C00]"
+                    />
+                    <input
+                      type="number"
+                      name="weight"
+                      value={formData.weight}
+                      onChange={handleChange}
+                      placeholder="وزن (کیلوگرم)"
+                      className="border border-[#8D5524] p-3 w-full rounded-lg text-[#3E2723] placeholder-[#8D5524] focus:outline-none focus:ring-2 focus:ring-[#F57C00]"
+                      min="0"
+                      max="250"
+                    />
+                    <input
+                      type="number"
+                      name="height"
+                      value={formData.height}
+                      onChange={handleChange}
+                      placeholder="قد (سانتی‌متر)"
+                      className="border border-[#8D5524] p-3 w-full rounded-lg text-[#3E2723] placeholder-[#8D5524] focus:outline-none focus:ring-2 focus:ring-[#F57C00]"
+                      min="0"
+                    />
+                    <input
+                      type="number"
+                      name="age"
+                      value={formData.age}
+                      onChange={handleChange}
+                      placeholder="سن"
+                      className="border border-[#8D5524] p-3 w-full rounded-lg text-[#3E2723] placeholder-[#8D5524] focus:outline-none focus:ring-2 focus:ring-[#F57C00]"
+                      min="0"
+                      max="150"
+                    />
+                    <div className="flex space-x-6 justify-center">
+                      <label className="inline-flex items-center text-[#3E2723] gap-x-2">
+                        <input
+                          type="radio"
+                          name="gender"
+                          value="male"
+                          checked={formData.gender === 'male'}
+                          onChange={() => handleRadioChange('gender', 'male')}
+                          className="form-radio text-[#F57C00] focus:ring-[#F57C00]"
+                        />
+                        <span className="ml-2">مرد</span>
+                      </label>
+                      <label className="inline-flex items-center text-[#3E2723] gap-x-2">
+                        <input
+                          type="radio"
+                          name="gender"
+                          value="female"
+                          checked={formData.gender === 'female'}
+                          onChange={() => handleRadioChange('gender', 'female')}
+                          className="form-radio text-[#F57C00] focus:ring-[#F57C00]"
+                        />
+                        <span className="ml-2">زن</span>
+                      </label>
+                    </div>
+                    {formData.gender === 'female' && (
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block font-medium text-[#3E2723] mb-1">آیا باردار هستید؟</label>
+                          <select
+                            name="pregnant"
+                            value={formData.pregnant}
+                            onChange={handleChange}
+                            className="border border-[#8D5524] p-3 w-full rounded-lg text-[#3E2723] focus:outline-none focus:ring-2 focus:ring-[#F57C00]"
+                          >
+                            <option value="no">خیر</option>
+                            <option value="yes">بله</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block font-medium text-[#3E2723] mb-1">آیا در دوران شیردهی هستید؟</label>
+                          <select
+                            name="breastfeeding"
+                            value={formData.breastfeeding}
+                            onChange={handleChange}
+                            className="border border-[#8D5524] p-3 w-full rounded-lg text-[#3E2723] focus:outline-none focus:ring-2 focus:ring-[#F57C00]"
+                          >
+                            <option value="no">خیر</option>
+                            <option value="yes">بله</option>
+                          </select>
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex space-x-4 justify-center">
+                      <button
+                        type="submit"
+                        className="bg-[#F57C00] text-white py-2 px-6 rounded-lg hover:bg-[#d96b00] transition duration-300"
+                      >
+                        محاسبه
+                      </button>
+                      <button
+                        type="button"
+                        onClick={resetForm}
+                        className="bg-[#8D5524] text-white py-2 px-6 rounded-lg hover:bg-[#7a4a20] transition duration-300"
+                      >
+                        ریست
+                      </button>
+                    </div>
+                    <span className='w-full flex justify-center gap-x-1'>نوشته شده توسط <a href="https://khomarian.ir" target='_blank' className='text-coffee font-bold'>فروشگاه خماریان</a></span>
+                  </form>
+                ) : (
+                  <div className="mt-6 p-6 border border-[#8D5524] rounded-lg bg-[#8D5524]/10 space-y-4">
+                    <p className="text-lg text-[#3E2723]">
+                      {formData.firstName} عزیز، شاخص توده بدنی شما{' '}
+                      <span className="font-bold text-[#F57C00]">{results.bmi}</span> است
+                    </p>
+                    <p className="text-[#3E2723]">
+                      میزان کافئین توصیه شده برای شما{' '}
+                      <span className="font-bold text-[#F57C00]">{results.caffeine}</span> میلی‌گرم در روز است
+                    </p>
+                    <p className={`${results.className} font-semibold`}>{results.bmiMessage}</p>
+                    {results.ageMessage && <p className="text-[#3E2723]">{results.ageMessage}</p>}
+                    {results.pregnancyBreastfeedingMessage && (
+                      <p className="text-[#3E2723]">{results.pregnancyBreastfeedingMessage}</p>
+                    )}
+                    {results.pregnancyMessage && (
+                      <p className="text-[#3E2723]">{results.pregnancyMessage}</p>
+                    )}
+                  </div>
+                )}
               </div>
-              <div>
-                <label className="block font-medium text-[#3E2723] mb-1">آیا در دوران شیردهی هستید؟</label>
-                <select
-                  name="breastfeeding"
-                  value={formData.breastfeeding}
-                  onChange={handleChange}
-                  className="border border-[#8D5524] p-3 w-full rounded-lg text-[#3E2723] focus:outline-none focus:ring-2 focus:ring-[#F57C00]"
-                >
-                  <option value="no">خیر</option>
-                  <option value="yes">بله</option>
-                </select>
-              </div>
-            </div>
-          )}
-          <div className="flex space-x-4 justify-center">
-            <button
-              type="submit"
-              className="bg-[#F57C00] text-white py-2 px-6 rounded-lg hover:bg-[#d96b00] transition duration-300"
-            >
-              محاسبه
-            </button>
-            <button
-              type="button"
-              onClick={resetForm}
-              className="bg-[#8D5524] text-white py-2 px-6 rounded-lg hover:bg-[#7a4a20] transition duration-300"
-            >
-              ریست
-            </button>
-          </div>
-          <span className='w-full flex justify-center gap-x-1'>نوشته شده توسط <a href="https://khomarian.ir" target='_blank' className='text-coffee font-bold'>فروشگاه خماریان</a></span>
-        </form>
-      ) : (
-        <div className="mt-6 p-6 border border-[#8D5524] rounded-lg bg-[#8D5524]/10 space-y-4">
-          <p className="text-lg text-[#3E2723]">
-            {formData.firstName} عزیز، شاخص توده بدنی شما{' '}
-            <span className="font-bold text-[#F57C00]">{results.bmi}</span> است
-          </p>
-          <p className="text-[#3E2723]">
-            میزان کافئین توصیه شده برای شما{' '}
-            <span className="font-bold text-[#F57C00]">{results.caffeine}</span> میلی‌گرم در روز است
-          </p>
-          <p className={`${results.className} font-semibold`}>{results.bmiMessage}</p>
-          {results.ageMessage && <p className="text-[#3E2723]">{results.ageMessage}</p>}
-          {results.pregnancyBreastfeedingMessage && (
-            <p className="text-[#3E2723]">{results.pregnancyBreastfeedingMessage}</p>
-          )}
-          {results.pregnancyMessage && (
-            <p className="text-[#3E2723]">{results.pregnancyMessage}</p>
-          )}
-        </div>
-      )}
-    </div>
+            ) : (
+              <Navigate to="/phone" />
+            )
+          }
+        />
+        <Route
+          path="/phone"
+          element={<PhoneNumberPage setPhoneNumber={setPhoneNumber} onSubmit={handlePhoneSubmit} />}
+        />
+      </Routes>
+    </Router>
   );
 }
 
