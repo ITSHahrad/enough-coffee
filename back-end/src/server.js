@@ -1,5 +1,5 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const mysql = require('mysql2/promise');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const bmiRoutes = require('./routes/bmiRoutes');
@@ -12,11 +12,30 @@ const app = express();
 app.use(express.json()); // Parse JSON bodies
 app.use(cors({ origin: "*" })); // Enable CORS for frontend communication
 
-// MongoDB Connection
-mongoose
-  .connect(process.env.DATABASE_URL, {  useUnifiedTopology: true })
-  .then(() => console.log('MongoDB connected'))
-  .catch((err) => console.error('MongoDB connection error:', err));
+// Create MySQL connection pool
+const pool = mysql.createPool({
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
+
+// Make pool available globally
+app.locals.db = pool;
+
+// Test database connection
+(async () => {
+  try {
+    const connection = await pool.getConnection();
+    console.log('MySQL connected');
+    connection.release();
+  } catch (err) {
+    console.error('MySQL connection error:', err);
+  }
+})();
 
 // Routes
 app.use('/api/bmi', bmiRoutes);
