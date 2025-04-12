@@ -141,6 +141,4 @@ This project is licensed under the MIT License – feel free to use, modify, and
 
 - Inspired by coffee lovers everywhere ☕❤️
 - Built with 💖 by [ITSHahrad](https://github.com/ITSHahrad)
-- Special thanks to [فروشگاه خماریان](https://khomarian.ir) for the vibes!
-
 ---
